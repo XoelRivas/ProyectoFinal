@@ -1,4 +1,6 @@
+import java.io.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -27,11 +29,16 @@ public class Main {
     }
 
     /**
-     * It shows the movies that the user add
+     * Method to show the movies that the user add
      */
     private static void userAddMovie() {
+        MovieController mc = loadMovieController();
+        if (mc == null) {
+            mc = new MovieController();
+        }
         Scanner s = new Scanner(System.in);
-        MovieController mc = new MovieController();
+        boolean repeat = true;
+        LocalDate watchDate = null;
 
         System.out.println("Add movie data: ");
         System.out.print("Title: ");
@@ -44,9 +51,16 @@ public class Main {
         System.out.print("Duration (in minutes): ");
         int duration = s.nextInt();
         s.nextLine(); //To clean Scanner buffer
-        System.out.print("Watch date (YYYY-MM-DD): ");
-        String watchDateStr = s.nextLine();
-        LocalDate watchDate = LocalDate.parse(watchDateStr);
+        while (repeat) {
+            System.out.print("Watch date (YYYY-MM-DD): ");
+            String watchDateStr = s.nextLine();
+            try {
+                watchDate = LocalDate.parse(watchDateStr);
+                repeat = false;
+            } catch (DateTimeParseException e) {
+                System.out.println("Incorrect date format. Please try again.");
+            }
+        }
         System.out.print("Streaming: ");
         String streaming = s.nextLine();
         System.out.print("Screen: ");
@@ -62,9 +76,48 @@ public class Main {
         //To add the movie using the controller
         mc.addMovie(movie);
 
+        //To save the movie
+        saveMovieController(mc);
+
         System.out.println("\nMovies list:");
         for (Map.Entry<Integer, Movie> entry : mc.getMovies().entrySet()){
             System.out.println("Nº: " + entry.getKey() + " || " + entry.getValue());
+        }
+    }
+
+    /**
+     * Method to load the list of movies
+     * @return MovieController
+     */
+    private static MovieController loadMovieController() {
+        MovieController mc = null;
+        try {
+            FileInputStream fileIn = new FileInputStream("MoviesList");
+            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+            mc = (MovieController) objectIn.readObject();
+            objectIn.close();
+            fileIn.close();
+        } catch (IOException | ClassNotFoundException e){
+            e.printStackTrace();
+            System.out.println("The movie file can not be load");
+        }
+        return mc;
+    }
+
+    /**
+     * Method to save the list of movies
+     * @param mc MovieController
+     */
+    private static void saveMovieController(MovieController mc) {
+        try {
+            FileOutputStream fileOut = new FileOutputStream("MoviesList");
+            ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
+            objectOut.writeObject(mc);
+            objectOut.close();
+            fileOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("The movie file can not be save");
         }
     }
 }

@@ -1,5 +1,8 @@
+import java.io.Serializable;
 import java.time.LocalDate;
-public class Movie {
+import java.time.format.DateTimeParseException;
+
+public class Movie implements Serializable {
     private String title;
     private int year;
     private String director;
