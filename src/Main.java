@@ -1,6 +1,7 @@
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.InputMismatchException;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -39,13 +40,32 @@ public class Main {
         Scanner s = new Scanner(System.in);
         boolean repeat = true;
         LocalDate watchDate = null;
+        int year = 0;
+        int currentyear = LocalDate.now().getYear();
 
         System.out.println("Add movie data: ");
         System.out.print("Title: ");
         String title = s.nextLine();
-        System.out.print("Year: ");
-        int year = s.nextInt();
+
+        while (repeat) {
+            try {
+            System.out.print("Year: ");
+            year = s.nextInt();
+                if (year < 1895) {
+                    System.out.println("Year must be superior to 1894. Please, try again.");
+                } else if (year > currentyear) {
+                    System.out.println("The year inserted is superior to the current year (" + currentyear + "). Please, try again.");
+                } else {
+                    repeat = false;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("The year to input must be superior to 1894 and inferior to " + currentyear + ". Please, try again.");
+                s.next();
+            }
+        }
         s.nextLine(); //To clean Scanner buffer
+        repeat = true;
+
         System.out.print("Director: ");
         String director = s.nextLine();
         System.out.print("Duration (in minutes): ");
@@ -58,7 +78,7 @@ public class Main {
                 watchDate = LocalDate.parse(watchDateStr);
                 repeat = false;
             } catch (DateTimeParseException e) {
-                System.out.println("Incorrect date format. Please try again.");
+                System.out.println("Incorrect date format. Please, try again.");
             }
         }
         System.out.print("Streaming: ");
