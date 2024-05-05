@@ -42,6 +42,8 @@ public class Main {
         LocalDate watchDate = null;
         int year = 0;
         int currentyear = LocalDate.now().getYear();
+        int rating = 0;
+        int duration = 0;
 
         System.out.println("Add movie data: ");
         System.out.print("Title: ");
@@ -49,8 +51,8 @@ public class Main {
 
         while (repeat) {
             try {
-            System.out.print("Year: ");
-            year = s.nextInt();
+                System.out.print("Year: ");
+                year = s.nextInt();
                 if (year < 1895) {
                     System.out.println("Year must be superior to 1894. Please, try again.");
                 } else if (year > currentyear) {
@@ -68,9 +70,24 @@ public class Main {
 
         System.out.print("Director: ");
         String director = s.nextLine();
-        System.out.print("Duration (in minutes): ");
-        int duration = s.nextInt();
+
+        while (repeat) {
+            try {
+                System.out.print("Duration (in minutes): ");
+                duration = s.nextInt();
+                if (duration < 0 || duration > 51500) {
+                    System.out.println("This value must be between 0 and 51500. Please, try again.");
+                } else {
+                    repeat = false;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("This value must be between 0 and 51500. Please, try again.");
+                s.next();
+            }
+        }
         s.nextLine(); //To clean Scanner buffer
+        repeat = true;
+
         while (repeat) {
             System.out.print("Watch date (YYYY-MM-DD): ");
             String watchDateStr = s.nextLine();
@@ -81,14 +98,27 @@ public class Main {
                 System.out.println("Incorrect date format. Please, try again.");
             }
         }
+        repeat = true;
         System.out.print("Streaming: ");
         String streaming = s.nextLine();
         System.out.print("Screen: ");
         String screen = s.nextLine();
         System.out.print("Audio: ");
         String audio = s.nextLine();
-        System.out.print("Rating: ");
-        int rating = s.nextInt();
+        while (repeat) {
+            try {
+                System.out.print("Rating: ");
+                rating = s.nextInt();
+                if (rating < 0 || rating > 10) {
+                    System.out.println("This value must be between 0 and 10. Please, try again.");
+                } else {
+                    repeat = false;
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("This value must be between 0 and 10 and must not have decimals. Please, try again.");
+                s.next();
+            }
+        }
 
         //It creates a movie object with the data that the user added
         Movie movie = new Movie(title, year, director, duration, watchDate, streaming, screen, audio, rating);
